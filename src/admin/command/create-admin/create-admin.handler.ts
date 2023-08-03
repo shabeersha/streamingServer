@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateAdminCommand } from './create-admin.command';
 import { AdminFactory } from '../../../admin/domain';
-import { AdminEntity } from 'src/admin/entity';
+import { AdminEntity } from '../../../admin/entity';
 
 @CommandHandler(CreateAdminCommand)
 export class CreateAdminHandler implements ICommandHandler<CreateAdminCommand> {
