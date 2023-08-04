@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AdminSchema } from '../schema';
 import { FilterQuery, Model } from 'mongoose';
@@ -24,7 +24,7 @@ export class AdminDtoRepository {
     );
 
     if (!admin) {
-      throw new UnauthorizedException('There is no admin with this username');
+      throw new NotFoundException('There is no admin with this username');
     }
 
     return admin;

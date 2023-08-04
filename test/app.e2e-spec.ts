@@ -5,7 +5,9 @@ import { request, spec } from 'pactum';
 import { AppModule } from '../src/app.module';
 import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { AdminSchema } from '../src/admin/schema';
-import { CreateAdminDto } from 'src/admin/dto';
+import { CreateAdminDto } from '../src/admin/dto';
+import { RefreshTokenSchema } from '../src/auth/schema';
+import { AdminSigninDto } from '../src/auth/dto';
 
 let app: INestApplication;
 
@@ -19,8 +21,12 @@ beforeAll(async () => {
   const adminModel: Model<AdminSchema> = moduleRef.get<Model<AdminSchema>>(
     getModelToken(AdminSchema.name),
   );
+  const refreshTokenModel: Model<RefreshTokenSchema> = moduleRef.get<
+    Model<RefreshTokenSchema>
+  >(getModelToken(RefreshTokenSchema.name));
 
   await adminModel.deleteMany({});
+  await refreshTokenModel.deleteMany({});
 
   app = moduleRef.createNestApplication();
   app.useGlobalPipes(
@@ -39,8 +45,8 @@ afterAll(() => {
   app.close();
 });
 
-describe('ADMIN /admin', () => {
-  describe('POST /create', () => {
+describe('ADMIN', () => {
+  describe('POST /admin/create', () => {
     it('should throw an error if no body is provided', () => {
       return spec().post('/admin/create').expectStatus(400);
     });
@@ -95,6 +101,60 @@ describe('ADMIN /admin', () => {
         .expectStatus(201)
         .expectBodyContains(dto.username)
         .expectBodyContains(dto.name);
+    });
+  });
+
+  describe('POST /auth/admin', () => {
+    it('should throw an error if body not provided', () => {
+      return spec().post('/auth/admin').expectStatus(400);
+    });
+
+    it('should throw an error if username is empty', () => {
+      const dto: Omit<AdminSigninDto, 'username'> = {
+        password: '#JohnDoe@123',
+      };
+
+      return spec().post('/auth/admin').withBody(dto).expectStatus(400);
+    });
+
+    it('should throw an error if password is empty', () => {
+      const dto: Omit<AdminSigninDto, 'password'> = {
+        username: 'johndoe',
+      };
+
+      return spec().post('/auth/admin').withBody(dto).expectStatus(400);
+    });
+
+    it('should throw an error if username is incorrect', () => {
+      const dto: AdminSigninDto = {
+        username: 'john',
+        password: '#JohnDoe@123',
+      };
+
+      return spec().post('/auth/admin').withBody(dto).expectStatus(404);
+    });
+
+    it('should throw an error if password is incorrect', () => {
+      const dto: AdminSigninDto = {
+        username: 'johndoe',
+        password: '1234',
+      };
+
+      return spec().post('/auth/admin').withBody(dto).expectStatus(401);
+    });
+
+    it('should signin admin', () => {
+      const dto: AdminSigninDto = {
+        username: 'johndoe',
+        password: '#JohnDoe@123',
+      };
+
+      return spec()
+        .post('/auth/admin')
+        .withBody(dto)
+        .expectStatus(200)
+        .stores('accessToken', 'access_token')
+        .stores('refreshToken', 'refresh_token');
     });
   });
 });
