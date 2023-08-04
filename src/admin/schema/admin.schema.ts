@@ -13,17 +13,17 @@ export class AdminSchema extends IdentifiableEntitySchema {
     trim: true,
     minlength: 4,
   })
-  username: string;
+  public readonly username: string;
 
   @Prop({
     required: true,
     trim: true,
     minlength: 3,
   })
-  name: string;
+  public readonly name: string;
 
   @Prop({
     required: true,
   })
-  password: string;
+  public readonly password: string;
 }

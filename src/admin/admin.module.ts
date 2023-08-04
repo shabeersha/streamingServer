@@ -3,7 +3,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { MongooseModule, SchemaFactory } from '@nestjs/mongoose';
 import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
-import { AdminEntityRepository } from './repository';
+import { AdminDtoRepository, AdminEntityRepository } from './repository';
 import { AdminSchema, AdminSchemaFactory } from './schema';
 import { AdminFactory } from './domain';
 import { AdminCommandHandlers } from './command';
@@ -22,9 +22,11 @@ import { AdminCommandHandlers } from './command';
   providers: [
     AdminService,
     AdminEntityRepository,
+    AdminDtoRepository,
     AdminSchemaFactory,
     AdminFactory,
     ...AdminCommandHandlers,
   ],
+  exports: [MongooseModule, AdminDtoRepository],
 })
 export class AdminModule {}
