@@ -1,7 +1,10 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 export class AdminEntity {
+  @Expose()
+  @Transform((params) => params.obj._id.toString())
   public readonly _id: string;
+
   public readonly username: string;
   public readonly name: string;
 

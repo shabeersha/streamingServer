@@ -1,3 +1,5 @@
+import { Roles } from './roles.config';
+
 export type JwtConfig = {
   secret: string;
   expiresIn: string;
@@ -6,6 +8,7 @@ export type JwtConfig = {
 export type Payload = {
   sub: string;
   username: string;
+  role: Roles;
 };
 
 export const accessTokenConfig = (): JwtConfig => ({

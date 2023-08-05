@@ -13,6 +13,7 @@ import {
 import { MongooseModule, SchemaFactory } from '@nestjs/mongoose';
 import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './schema';
 import { RefreshTokenFactory } from './domain';
+import { AdminAccessTokenStrategy } from './strategy';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RefreshTokenFactory } from './domain';
     RefreshTokenSchemaFactory,
     RefreshTokenFactory,
     RefreshTokenDtoRepository,
+    AdminAccessTokenStrategy,
     ...AuthQueryHandlers,
     ...AuthCommandHandlers,
   ],

@@ -17,7 +17,7 @@ export class AdminDtoRepository {
   }
 
   async findByUsername(username: string): Promise<AdminDto> {
-    const admin = await this.adminModel.findOne(
+    const admin: AdminDto = await this.adminModel.findOne(
       { username } as FilterQuery<AdminSchema>,
       {},
       { lean: true },

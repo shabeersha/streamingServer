@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb';
 
 export class AdminDto {
-  readonly _id: ObjectId;
+  readonly _id: string;
   readonly username: string;
   readonly name?: string;
   readonly password?: string;

@@ -8,6 +8,7 @@ import { AdminDto } from '../admin/dto';
 import {
   JwtConfig,
   Payload,
+  Roles,
   accessTokenConfig,
   adminRefreshTokenConfig,
 } from '../config';
@@ -29,8 +30,9 @@ export class AuthService {
     );
 
     const payload: Payload = {
-      sub: admin._id.toHexString(),
+      sub: admin._id,
       username: admin.username,
+      role: Roles.ADMIN,
     };
 
     const accessToken = await this.generateJWT(payload, accessTokenConfig());
@@ -41,7 +43,7 @@ export class AuthService {
 
     await this.commandBus.execute<SaveRefreshTokenCommand, void>(
       new SaveRefreshTokenCommand({
-        userId: admin._id.toHexString(),
+        userId: admin._id,
         token: refreshToken,
       }),
     );
