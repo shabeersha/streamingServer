@@ -8,6 +8,7 @@ import {
   refreshTokenConfig,
 } from './config';
 import { AuthModule } from './auth/auth.module';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     AdminModule,
     AuthModule,
+    VideoModule,
   ],
 })
 export class AppModule {}
