@@ -10,6 +10,8 @@ import { RefreshTokenSchema } from '../src/auth/schema';
 import { AdminSigninDto, TokenDto } from '../src/auth/dto';
 import { CreateVideoDto } from '../src/video/dto';
 import { VideoSchema } from '../src/video/schema';
+import { CreateBatchDto } from '../src/batch/dto';
+import { BatchSchema } from '../src/batch/schema';
 
 let app: INestApplication;
 
@@ -29,10 +31,14 @@ beforeAll(async () => {
   const videoModel: Model<VideoSchema> = moduleRef.get<Model<VideoSchema>>(
     getModelToken(VideoSchema.name),
   );
+  const batchModel: Model<BatchSchema> = moduleRef.get<Model<BatchSchema>>(
+    getModelToken(BatchSchema.name),
+  );
 
   await adminModel.deleteMany({});
   await refreshTokenModel.deleteMany({});
   await videoModel.deleteMany({});
+  await batchModel.deleteMany({});
 
   app = moduleRef.createNestApplication();
   app.useGlobalPipes(
@@ -306,6 +312,89 @@ describe('VIDEO', () => {
         .withBearerToken('$S{accessToken}')
         .withBody(dto)
         .expectStatus(403);
+    });
+  });
+});
+
+describe('BATCH', () => {
+  describe('POST /batch', () => {
+    it('should throw an error if no authorization bearer token is provided', () => {
+      return spec().post('/batch').expectStatus(401);
+    });
+
+    it('should throw an error if body not provided', () => {
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(400);
+    });
+
+    it('should throw an error if branch code is empty', () => {
+      const dto: Omit<CreateBatchDto, 'branchCode'> = {
+        batchNumber: 100,
+        password: '#BCK100@bck',
+      };
+
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if batch number is empty', () => {
+      const dto: Omit<CreateBatchDto, 'batchNumber'> = {
+        branchCode: 'BCK',
+        password: '#BCK100@bck',
+      };
+
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should thro an error if password is empty', () => {
+      const dto: Omit<CreateBatchDto, 'password'> = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+      };
+
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if password is not strong enough', () => {
+      const dto: CreateBatchDto = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+        password: '1234',
+      };
+
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should create batch', () => {
+      const dto: CreateBatchDto = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+        password: '#BCK100@bck',
+      };
+
+      return spec()
+        .post('/batch')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(201)
+        .stores('batchId', '_id');
     });
   });
 });
