@@ -7,7 +7,6 @@ export type JwtConfig = {
 
 export type Payload = {
   sub: string;
-  username: string;
   role: Roles;
 };
 

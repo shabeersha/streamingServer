@@ -1,6 +1,15 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AdminSigninDto } from './dto';
+import { AdminSigninDto, TokenDto } from './dto';
+import { AdminRefreshGuard } from './guard';
+import { SerializeAdmin } from './decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -8,7 +17,22 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post('admin')
-  adminSignin(@Body() dto: AdminSigninDto) {
+  adminSignin(@Body() dto: AdminSigninDto): Promise<{
+    access_token: string;
+    refresh_token: string;
+  }> {
     return this.authService.adminSignin(dto);
+  }
+
+  @UseGuards(AdminRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('admin/refresh')
+  refreshAdminToken(
+    @SerializeAdmin('_id') adminId: string,
+    @Body() dto: TokenDto,
+  ): Promise<{
+    access_token: string;
+  }> {
+    return this.authService.refreshAdminToken(adminId, dto);
   }
 }

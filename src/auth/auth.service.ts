@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { AdminSigninDto } from './dto';
+import { AdminSigninDto, RefreshTokenDto, TokenDto } from './dto';
 import { AdminSigninQuery } from './query';
 import { SaveRefreshTokenCommand } from './command';
 import { AdminDto } from '../admin/dto';
@@ -12,6 +12,7 @@ import {
   accessTokenConfig,
   adminRefreshTokenConfig,
 } from '../config';
+import { FindRefreshTokenQuery } from './query/find-refresh-token/find-refresh-token.query';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,6 @@ export class AuthService {
 
     const payload: Payload = {
       sub: admin._id,
-      username: admin.username,
       role: Roles.ADMIN,
     };
 
@@ -51,6 +51,31 @@ export class AuthService {
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
+    };
+  }
+
+  public async refreshAdminToken(
+    adminId: string,
+    dto: TokenDto,
+  ): Promise<{ access_token: string }> {
+    const refreshToken = this.queryBus.execute<
+      FindRefreshTokenQuery,
+      RefreshTokenDto
+    >(new FindRefreshTokenQuery(dto.token));
+
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const payload: Payload = {
+      sub: adminId,
+      role: Roles.ADMIN,
+    };
+
+    const accessToken = await this.generateJWT(payload, accessTokenConfig());
+
+    return {
+      access_token: accessToken,
     };
   }
 

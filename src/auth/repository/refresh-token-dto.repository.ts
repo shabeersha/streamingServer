@@ -12,10 +12,10 @@ export class RefreshTokenDtoRepository {
     private readonly refreshTokenModel: Model<RefreshTokenSchema>,
   ) {}
 
-  async findRefreshToken(refreshToken: string): Promise<RefreshTokenDto> {
+  async findRefreshToken(token: string): Promise<RefreshTokenDto> {
     return await this.refreshTokenModel.findOne(
       {
-        token: refreshToken,
+        token,
       } as FilterQuery<RefreshTokenSchema>,
       {},
       { lean: true },
