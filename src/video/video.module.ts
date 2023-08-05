@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { VideoController } from './video.controller';
 import { VideoService } from './video.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { videoHandlers } from './command';
+import { VideoCommandHandlers } from './command';
 import { VideoFactory } from './domain';
-import { VideoEntityRepository } from './repository';
+import { VideoDtoRepository, VideoEntityRepository } from './repository';
 import { MongooseModule, SchemaFactory } from '@nestjs/mongoose';
 import { VideoSchema, VideoSchemaFactory } from './schema';
+import { VideoQueryHandlers } from './query';
 
 @Module({
   imports: [
@@ -22,9 +23,11 @@ import { VideoSchema, VideoSchemaFactory } from './schema';
   providers: [
     VideoService,
     VideoEntityRepository,
+    VideoDtoRepository,
     VideoSchemaFactory,
     VideoFactory,
-    ...videoHandlers,
+    ...VideoCommandHandlers,
+    ...VideoQueryHandlers,
   ],
 })
 export class VideoModule {}

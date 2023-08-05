@@ -1,5 +1,3 @@
-import { ObjectId } from 'mongodb';
-
 export class AdminDto {
   readonly _id: string;
   readonly username: string;
