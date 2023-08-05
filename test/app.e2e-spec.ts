@@ -157,4 +157,17 @@ describe('ADMIN', () => {
         .stores('refreshToken', 'refresh_token');
     });
   });
+
+  describe('GET /admin', () => {
+    it('should trow an error if no authorization bearer is provided', () => {
+      return spec().get('/admin').expectStatus(401);
+    });
+
+    it('should get admin', () => {
+      return spec()
+        .get('/admin')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(200);
+    });
+  });
 });
