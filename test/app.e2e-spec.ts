@@ -8,6 +8,8 @@ import { AdminSchema } from '../src/admin/schema';
 import { CreateAdminDto } from '../src/admin/dto';
 import { RefreshTokenSchema } from '../src/auth/schema';
 import { AdminSigninDto, TokenDto } from '../src/auth/dto';
+import { CreateVideoDto } from '../src/video/dto';
+import { VideoSchema } from '../src/video/schema';
 
 let app: INestApplication;
 
@@ -24,9 +26,13 @@ beforeAll(async () => {
   const refreshTokenModel: Model<RefreshTokenSchema> = moduleRef.get<
     Model<RefreshTokenSchema>
   >(getModelToken(RefreshTokenSchema.name));
+  const videoModel: Model<VideoSchema> = moduleRef.get<Model<VideoSchema>>(
+    getModelToken(VideoSchema.name),
+  );
 
   await adminModel.deleteMany({});
   await refreshTokenModel.deleteMany({});
+  await videoModel.deleteMany({});
 
   app = moduleRef.createNestApplication();
   app.useGlobalPipes(
@@ -194,6 +200,112 @@ describe('ADMIN', () => {
         .withBody(dto)
         .expectStatus(200)
         .stores('accessToken', 'access_token');
+    });
+  });
+});
+
+describe('VIDEO', () => {
+  describe('POST /video', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
+      return spec().post('/video').expectStatus(401);
+    });
+
+    it('should throw an error if body not provided', () => {
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoKey is empty', () => {
+      const dto: Omit<CreateVideoDto, 'videoKey'> = {
+        videoUrl: 'http://example.com/video.mp4',
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoUrl is empty', () => {
+      const dto: Omit<CreateVideoDto, 'videoUrl'> = {
+        videoKey: 1,
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoThumbnail is empty', () => {
+      const dto: Omit<CreateVideoDto, 'videoThumbnail'> = {
+        videoKey: 1,
+        videoUrl: 'http://example.com/video.mp4',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if description is empty', () => {
+      const dto: Omit<CreateVideoDto, 'description'> = {
+        videoKey: 1,
+        videoUrl: 'http://example.com/video.mp4',
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should create video', () => {
+      const dto: CreateVideoDto = {
+        videoKey: 1,
+        videoUrl: 'http://example.com/video.mp4',
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(201)
+        .expectBodyContains(dto.videoKey)
+        .expectBodyContains(dto.videoUrl)
+        .expectBodyContains(dto.videoThumbnail)
+        .expectBodyContains(dto.description)
+        .stores('videoId', '_id');
+    });
+
+    it('should throw an error if videokey already in use', () => {
+      const dto: CreateVideoDto = {
+        videoKey: 1,
+        videoUrl: 'http://example.com/video.mp4',
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(403);
     });
   });
 });
