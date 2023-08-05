@@ -7,7 +7,7 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { AdminSchema } from '../src/admin/schema';
 import { CreateAdminDto } from '../src/admin/dto';
 import { RefreshTokenSchema } from '../src/auth/schema';
-import { AdminSigninDto } from '../src/auth/dto';
+import { AdminSigninDto, TokenDto } from '../src/auth/dto';
 
 let app: INestApplication;
 
@@ -168,6 +168,32 @@ describe('ADMIN', () => {
         .get('/admin')
         .withBearerToken('$S{accessToken}')
         .expectStatus(200);
+    });
+  });
+
+  describe('POST /auth/admin/refresh', () => {
+    it('should throw an error if provided refreshtoken is invalid', () => {
+      const dto: TokenDto = {
+        token: 'invalid',
+      };
+
+      return spec().post('/auth/admin/refresh').withBody(dto).expectStatus(401);
+    });
+
+    it('should throw an error if no body is provided', () => {
+      return spec().post('/auth/admin/refresh').expectStatus(401);
+    });
+
+    it('should refresh admin token', () => {
+      const dto: TokenDto = {
+        token: '$S{refreshToken}',
+      };
+
+      return spec()
+        .post('/auth/admin/refresh')
+        .withBody(dto)
+        .expectStatus(200)
+        .stores('accessToken', 'access_token');
     });
   });
 });
