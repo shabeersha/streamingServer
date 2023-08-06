@@ -34,7 +34,7 @@ export class Batch extends AggregateRoot {
     return this.password;
   }
 
-  async editBatch(dto: EditBatchDto, videos?: VideoDto[]): Promise<void> {
+  async updateBatch(dto: EditBatchDto, videos?: VideoDto[]): Promise<void> {
     if (dto.password) {
       this.password = await argon.hash(dto.password);
     }
