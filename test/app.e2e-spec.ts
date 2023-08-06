@@ -475,4 +475,17 @@ describe('BATCH', () => {
         .stores('batchRefreshToken', 'refresh_token');
     });
   });
+
+  describe('GET /batch', () => {
+    it('should trow an error if no authorization bearer token is provided', () => {
+      return spec().get('/batch').expectStatus(401);
+    });
+
+    it('should get batch', () => {
+      return spec()
+        .get('/batch')
+        .withBearerToken('$S{batchAccessToken}')
+        .expectStatus(200);
+    });
+  });
 });
