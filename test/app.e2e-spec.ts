@@ -208,6 +208,20 @@ describe('ADMIN', () => {
         .stores('accessToken', 'access_token');
     });
   });
+
+  describe('DELETE /auth/admin', () => {
+    it('should throw an error if no authorization bearer token is provider', () => {
+      return spec().delete('/auth/admin').expectStatus(401);
+    });
+
+    it('should signout admin', () => {
+      return spec()
+        .delete('/auth/admin')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(204)
+        .expectBody('');
+    });
+  });
 });
 
 describe('VIDEO', () => {

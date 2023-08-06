@@ -13,6 +13,7 @@ import { AdminEntity } from './entity';
 import { AdminAccessGuard } from '../auth/guard';
 import { SerializeUser } from '../auth/decorator';
 
+@UseGuards(AdminAccessGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('admin')
 export class AdminController {
@@ -23,7 +24,6 @@ export class AdminController {
     return this.adminService.createAdmin(dto);
   }
 
-  @UseGuards(AdminAccessGuard)
   @Get()
   getAdmin(@SerializeUser() admin: AdminDto): AdminEntity {
     return new AdminEntity(admin);

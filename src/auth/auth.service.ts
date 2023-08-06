@@ -22,9 +22,8 @@ import { FindRefreshTokenQuery } from './query/find-refresh-token/find-refresh-t
 import { BatchDto } from '../batch/dto';
 import { GetVideosQuery } from '../video/query';
 import { VideoDto } from '../video/dto';
-import { EditBatchCommand } from 'src/batch/command';
-import { BatchEntity } from 'src/batch/entity';
-import { SocketService } from 'src/socket/socket.service';
+import { EditBatchCommand } from '../batch/command';
+import { SocketService } from '../socket/socket.service';
 
 @Injectable()
 export class AuthService {
@@ -71,7 +70,7 @@ export class AuthService {
     adminId: string,
     dto: TokenDto,
   ): Promise<{ access_token: string }> {
-    const refreshToken = this.queryBus.execute<
+    const refreshToken = await this.queryBus.execute<
       FindRefreshTokenQuery,
       RefreshTokenDto
     >(new FindRefreshTokenQuery({ token: dto.token }));
@@ -145,7 +144,7 @@ export class AuthService {
     batchId: string,
     dto: TokenDto,
   ): Promise<{ access_token: string }> {
-    const refreshToken = this.queryBus.execute<
+    const refreshToken = await this.queryBus.execute<
       FindRefreshTokenQuery,
       RefreshTokenDto
     >(new FindRefreshTokenQuery({ token: dto.token }));
