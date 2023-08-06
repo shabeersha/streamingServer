@@ -7,7 +7,7 @@ import { MongooseModule, getModelToken } from '@nestjs/mongoose';
 import { AdminSchema } from '../src/admin/schema';
 import { CreateAdminDto } from '../src/admin/dto';
 import { RefreshTokenSchema } from '../src/auth/schema';
-import { AdminSigninDto, TokenDto } from '../src/auth/dto';
+import { AdminSigninDto, BatchSigninDto, TokenDto } from '../src/auth/dto';
 import { CreateVideoDto } from '../src/video/dto';
 import { VideoSchema } from '../src/video/schema';
 import { CreateBatchDto } from '../src/batch/dto';
@@ -395,6 +395,84 @@ describe('BATCH', () => {
         .withBody(dto)
         .expectStatus(201)
         .stores('batchId', '_id');
+    });
+  });
+
+  describe('POST /auth/batch', () => {
+    it('should throw an error if body not provided', () => {
+      return spec().post('/auth/batch').expectStatus(400);
+    });
+
+    it('should throw an error if branchCode is empty', () => {
+      const dto: Omit<BatchSigninDto, 'branchCode'> = {
+        batchNumber: 100,
+        password: '#BCK100@bck',
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(400);
+    });
+
+    it('should throw an error if batchNumber is empty', () => {
+      const dto: Omit<BatchSigninDto, 'batchNumber'> = {
+        branchCode: 'BCK',
+        password: '#BCK100@bck',
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(400);
+    });
+
+    it('should throw an error if password is empty', () => {
+      const dto: Omit<BatchSigninDto, 'password'> = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(400);
+    });
+
+    it('should throw an error if branchCode is incorrect', () => {
+      const dto: BatchSigninDto = {
+        branchCode: 'BCE',
+        batchNumber: 100,
+        password: '#BCK100@bck',
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(404);
+    });
+
+    it('should throw an error if batchNumber is incorrect', () => {
+      const dto: BatchSigninDto = {
+        branchCode: 'BCK',
+        batchNumber: 111,
+        password: '#BCK100@bck',
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(404);
+    });
+
+    it('should throw an error if password is incorrect', () => {
+      const dto: BatchSigninDto = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+        password: '123456',
+      };
+
+      return spec().post('/auth/batch').withBody(dto).expectStatus(401);
+    });
+
+    it('should signin batch', () => {
+      const dto: BatchSigninDto = {
+        branchCode: 'BCK',
+        batchNumber: 100,
+        password: '#BCK100@bck',
+      };
+
+      return spec()
+        .post('/auth/batch')
+        .withBody(dto)
+        .expectStatus(200)
+        .stores('batchAccessToken', 'access_token')
+        .stores('batchRefreshToken', 'refresh_token');
     });
   });
 });
