@@ -12,6 +12,7 @@ import { CreateVideoDto } from '../src/video/dto';
 import { VideoSchema } from '../src/video/schema';
 import { CreateBatchDto } from '../src/batch/dto';
 import { BatchSchema } from '../src/batch/schema';
+import { ObjectId } from 'mongodb';
 
 let app: INestApplication;
 
@@ -40,6 +41,14 @@ beforeAll(async () => {
   await videoModel.deleteMany({});
   await batchModel.deleteMany({});
 
+  await adminModel.create({
+    _id: new ObjectId(),
+    username: 'johndoe',
+    name: 'John Doe',
+    password:
+      '$argon2id$v=19$m=65536,t=3,p=4$AuuEOEGe+HGN5C2D5mv2KA$WXyWOPsG3IT/IA33dinKw7Yy/yD/x59Err5pY03xLYI',
+  });
+
   app = moduleRef.createNestApplication();
   app.useGlobalPipes(
     new ValidationPipe({
@@ -58,64 +67,6 @@ afterAll(() => {
 });
 
 describe('ADMIN', () => {
-  describe('POST /admin/create', () => {
-    it('should throw an error if body not provided', () => {
-      return spec().post('/admin/create').expectStatus(400);
-    });
-
-    it('should throw an error if username is empty', () => {
-      const dto: Omit<CreateAdminDto, 'username'> = {
-        name: 'John Doe',
-        password: '#JohnDoe@123',
-      };
-
-      return spec().post('/admin/create').withBody(dto).expectStatus(400);
-    });
-
-    it('should throw an error if name is empty', () => {
-      const dto: Omit<CreateAdminDto, 'name'> = {
-        username: 'johndoe',
-        password: 'JohnDoe@123',
-      };
-
-      return spec().post('/admin/create').withBody(dto).expectStatus(400);
-    });
-
-    it('should thro an error if password is empty', () => {
-      const dto: Omit<CreateAdminDto, 'password'> = {
-        name: 'John Doe',
-        username: 'johndoe',
-      };
-
-      return spec().post('/admin/create').withBody(dto).expectStatus(400);
-    });
-
-    it('should throw an error if password is not strong enough', () => {
-      const dto: CreateAdminDto = {
-        username: 'johndoe',
-        name: 'John Doe',
-        password: '1234',
-      };
-
-      return spec().post('/admin/create').withBody(dto).expectStatus(400);
-    });
-
-    it('should create new admin', () => {
-      const dto: CreateAdminDto = {
-        username: 'johndoe',
-        name: 'John Doe',
-        password: '#JohnDoe@123',
-      };
-
-      return spec()
-        .post('/admin/create')
-        .withBody(dto)
-        .expectStatus(201)
-        .expectBodyContains(dto.username)
-        .expectBodyContains(dto.name);
-    });
-  });
-
   describe('POST /auth/admin', () => {
     it('should throw an error if body not provided', () => {
       return spec().post('/auth/admin').expectStatus(400);
@@ -123,7 +74,7 @@ describe('ADMIN', () => {
 
     it('should throw an error if username is empty', () => {
       const dto: Omit<AdminSigninDto, 'username'> = {
-        password: '#JohnDoe@123',
+        password: '#JohnDoe123',
       };
 
       return spec().post('/auth/admin').withBody(dto).expectStatus(400);
@@ -140,7 +91,7 @@ describe('ADMIN', () => {
     it('should throw an error if username is incorrect', () => {
       const dto: AdminSigninDto = {
         username: 'john',
-        password: '#JohnDoe@123',
+        password: '#JohnDoe123',
       };
 
       return spec().post('/auth/admin').withBody(dto).expectStatus(404);
@@ -158,7 +109,7 @@ describe('ADMIN', () => {
     it('should signin admin', () => {
       const dto: AdminSigninDto = {
         username: 'johndoe',
-        password: '#JohnDoe@123',
+        password: '#JohnDoe123',
       };
 
       return spec()
@@ -170,8 +121,90 @@ describe('ADMIN', () => {
     });
   });
 
+  describe('POST /admin/create', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
+      return spec().post('/admin/create').expectStatus(401);
+    });
+
+    it('should throw an error if body not provided', () => {
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(400);
+    });
+
+    it('should throw an error if username is empty', () => {
+      const dto: Omit<CreateAdminDto, 'username'> = {
+        name: 'Test Admin',
+        password: '#TestPassword123',
+      };
+
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if name is empty', () => {
+      const dto: Omit<CreateAdminDto, 'name'> = {
+        username: 'testadmin',
+        password: '#TestPassword123',
+      };
+
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should thro an error if password is empty', () => {
+      const dto: Omit<CreateAdminDto, 'password'> = {
+        name: 'Test Admin',
+        username: 'testadmin',
+      };
+
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if password is not strong enough', () => {
+      const dto: CreateAdminDto = {
+        username: 'testadmin',
+        name: 'Test Admin',
+        password: '1234',
+      };
+
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should create new admin', () => {
+      const dto: CreateAdminDto = {
+        username: 'testadmin',
+        name: 'Test Admin',
+        password: '#TestPassword123',
+      };
+
+      return spec()
+        .post('/admin/create')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(201)
+        .expectBodyContains(dto.username)
+        .expectBodyContains(dto.name);
+    });
+  });
+
   describe('GET /admin', () => {
-    it('should trow an error if no authorization bearer is provided', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
       return spec().get('/admin').expectStatus(401);
     });
 
@@ -210,7 +243,7 @@ describe('ADMIN', () => {
   });
 
   describe('DELETE /auth/admin', () => {
-    it('should throw an error if no authorization bearer token is provider', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
       return spec().delete('/auth/admin').expectStatus(401);
     });
 
@@ -332,7 +365,7 @@ describe('VIDEO', () => {
 
 describe('BATCH', () => {
   describe('POST /batch', () => {
-    it('should throw an error if no authorization bearer token is provided', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
       return spec().post('/batch').expectStatus(401);
     });
 
@@ -491,7 +524,7 @@ describe('BATCH', () => {
   });
 
   describe('GET /batch', () => {
-    it('should trow an error if no authorization bearer token is provided', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
       return spec().get('/batch').expectStatus(401);
     });
 
@@ -500,6 +533,26 @@ describe('BATCH', () => {
         .get('/batch')
         .withBearerToken('$S{batchAccessToken}')
         .expectStatus(200);
+    });
+  });
+
+  describe('GET /batch/:id', () => {
+    it('should throw if no authorization bearer is provided', () => {
+      return spec()
+        .get('/batch/{id}')
+        .withPathParams({ id: '$S{batchId}' })
+        .expectStatus(401);
+    });
+
+    it('should get batch by id', () => {
+      return spec()
+        .get('/batch/{id}')
+        .withPathParams({
+          id: '$S{batchId}',
+        })
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(200)
+        .expectBodyContains('$S{batchId}');
     });
   });
 
