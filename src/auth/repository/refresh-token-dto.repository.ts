@@ -22,6 +22,16 @@ export class RefreshTokenDtoRepository {
     );
   }
 
+  async findRefreshTokenByUserId(userId: string): Promise<RefreshTokenDto> {
+    return await this.refreshTokenModel.findOne(
+      {
+        userId,
+      } as FilterQuery<RefreshTokenSchema>,
+      {},
+      { lean: true },
+    );
+  }
+
   async deleteRefreshTokenByUserId(userId: string): Promise<RefreshTokenDto> {
     return await this.refreshTokenModel.findOneAndDelete(
       { user: new ObjectId(userId) } as FilterQuery<RefreshTokenSchema>,

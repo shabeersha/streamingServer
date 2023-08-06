@@ -17,6 +17,7 @@ import {
   AdminAccessTokenStrategy,
   AdminRefreshTokenStrategy,
 } from './strategy';
+import { BatchModule } from '../batch/batch.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import {
       },
     ]),
     AdminModule,
+    BatchModule,
     JwtModule.register({}),
   ],
   controllers: [AuthController],

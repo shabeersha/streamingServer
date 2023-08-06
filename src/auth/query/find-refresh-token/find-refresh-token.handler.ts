@@ -12,6 +12,16 @@ export class FindRefreshTokenHandler
   ) {}
 
   async execute(query: FindRefreshTokenQuery): Promise<RefreshTokenDto> {
-    return await this.refreshTokenDtoRepository.findRefreshToken(query.token);
+    if (query.dto.token) {
+      return await this.refreshTokenDtoRepository.findRefreshToken(
+        query.dto.token,
+      );
+    }
+
+    if (query.dto.userId) {
+      return await this.refreshTokenDtoRepository.findRefreshTokenByUserId(
+        query.dto.userId,
+      );
+    }
   }
 }

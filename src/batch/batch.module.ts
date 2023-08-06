@@ -31,5 +31,6 @@ import { JwtModule } from '@nestjs/jwt';
     ...BatchQueryHandlers,
     ...BatchCommandHandlers,
   ],
+  exports: [MongooseModule, BatchDtoRepository],
 })
 export class BatchModule {}

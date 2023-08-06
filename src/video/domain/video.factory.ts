@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { EntityFactory } from '../../database';
 import { ObjectId } from 'mongodb';
 import { Video } from './video';
@@ -6,7 +11,10 @@ import { VideoEntityRepository } from '../repository';
 
 @Injectable()
 export class VideoFactory implements EntityFactory<Video> {
-  constructor(private readonly videoEntityRepository: VideoEntityRepository) {}
+  constructor(
+    @Inject(forwardRef(() => VideoEntityRepository))
+    private readonly videoEntityRepository: VideoEntityRepository,
+  ) {}
 
   async create(
     videoKey: number,

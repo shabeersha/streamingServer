@@ -7,6 +7,7 @@ import { AdminDtoRepository, AdminEntityRepository } from './repository';
 import { AdminSchema, AdminSchemaFactory } from './schema';
 import { AdminFactory } from './domain';
 import { AdminCommandHandlers } from './command';
+import { AdminQueryHandlers } from './query';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AdminCommandHandlers } from './command';
     AdminSchemaFactory,
     AdminFactory,
     ...AdminCommandHandlers,
+    ...AdminQueryHandlers,
   ],
   exports: [MongooseModule, AdminDtoRepository],
 })

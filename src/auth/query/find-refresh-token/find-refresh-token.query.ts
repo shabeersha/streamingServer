@@ -1,3 +1,5 @@
+import { FindRefreshTokenDto } from '../../../auth/dto';
+
 export class FindRefreshTokenQuery {
-  constructor(public readonly token: string) {}
+  constructor(public readonly dto: FindRefreshTokenDto) {}
 }

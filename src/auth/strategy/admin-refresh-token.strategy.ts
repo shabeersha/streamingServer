@@ -4,7 +4,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Roles } from '../../config';
-import { FindAdminQuery } from '../query/find-admin/find-admin.query';
+import { FindAdminQuery } from '../../admin/query';
 import { AdminDto } from '../../admin/dto';
 
 @Injectable()

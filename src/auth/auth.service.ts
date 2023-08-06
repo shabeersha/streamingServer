@@ -1,8 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
-import { AdminSigninDto, RefreshTokenDto, TokenDto } from './dto';
-import { AdminSigninQuery } from './query';
+import {
+  AdminSigninDto,
+  BatchSigninDto,
+  RefreshTokenDto,
+  TokenDto,
+} from './dto';
+import { AdminSigninQuery, BatchSigninQuery } from './query';
 import { SaveRefreshTokenCommand } from './command';
 import { AdminDto } from '../admin/dto';
 import {
@@ -11,8 +16,10 @@ import {
   Roles,
   accessTokenConfig,
   adminRefreshTokenConfig,
+  refreshTokenConfig,
 } from '../config';
 import { FindRefreshTokenQuery } from './query/find-refresh-token/find-refresh-token.query';
+import { BatchDto } from 'src/batch/dto';
 
 @Injectable()
 export class AuthService {
@@ -61,7 +68,7 @@ export class AuthService {
     const refreshToken = this.queryBus.execute<
       FindRefreshTokenQuery,
       RefreshTokenDto
-    >(new FindRefreshTokenQuery(dto.token));
+    >(new FindRefreshTokenQuery({ token: dto.token }));
 
     if (!refreshToken) {
       throw new UnauthorizedException();
@@ -79,10 +86,42 @@ export class AuthService {
     };
   }
 
+  public async batchSignin(dto: BatchSigninDto): Promise<{
+    access_token: string;
+    refresh_token: string;
+  }> {
+    const batch = await this.queryBus.execute<BatchSigninQuery, BatchDto>(
+      new BatchSigninQuery(dto),
+    );
+
+    const { token } = await this.queryBus.execute<
+      FindRefreshTokenQuery,
+      RefreshTokenDto
+    >(new FindRefreshTokenQuery({ userId: batch._id }));
+
+    const payload: Payload = await this.verifyBatchRefreshToken(token);
+
+    const accessToken = await this.generateJWT(payload, accessTokenConfig());
+
+    return {
+      access_token: accessToken,
+      refresh_token: token,
+    };
+  }
+
   public generateJWT(payload: Payload, config: JwtConfig): string {
     return this.jwtService.sign(payload, {
       secret: config.secret,
       expiresIn: config.expiresIn,
     });
+  }
+
+  public async verifyBatchRefreshToken(refreshToken: string): Promise<Payload> {
+    const { sub, role } = await this.jwtService.verifyAsync(
+      refreshToken,
+      refreshTokenConfig(),
+    );
+
+    return { sub, role };
   }
 }
