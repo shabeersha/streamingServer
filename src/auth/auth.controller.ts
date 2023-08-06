@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Post,
@@ -8,7 +9,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AdminSigninDto, BatchSigninDto, TokenDto } from './dto';
-import { AdminRefreshGuard, BatchRefreshGuard } from './guard';
+import {
+  AdminAccessGuard,
+  AdminRefreshGuard,
+  BatchRefreshGuard,
+} from './guard';
 import { SerializeUser } from './decorator';
 
 @Controller('auth')
@@ -34,6 +39,16 @@ export class AuthController {
     access_token: string;
   }> {
     return this.authService.refreshAdminToken(adminId, dto);
+  }
+
+  @UseGuards(AdminAccessGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('admin')
+  adminSignOut(
+    @SerializeUser('_id') adminId: string,
+    @Body('batchId') batchId?: string,
+  ): Promise<void> {
+    return this.authService.adminSignOut(adminId, batchId);
   }
 
   @HttpCode(HttpStatus.OK)

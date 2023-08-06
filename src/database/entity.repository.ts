@@ -64,7 +64,7 @@ export abstract class EntityRepository<
     }
   }
 
-  protected async findOneAndDelete(
+  public async findOneAndDelete(
     entityFilterQuery: FilterQuery<TSchema>,
   ): Promise<void> {
     const deletedDocument = await this.entityModel.findOneAndDelete(

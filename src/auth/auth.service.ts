@@ -8,7 +8,7 @@ import {
   TokenDto,
 } from './dto';
 import { AdminSigninQuery, BatchSigninQuery } from './query';
-import { SaveRefreshTokenCommand } from './command';
+import { DeleteRefreshTokenCommand, SaveRefreshTokenCommand } from './command';
 import { AdminDto } from '../admin/dto';
 import {
   JwtConfig,
@@ -19,7 +19,12 @@ import {
   refreshTokenConfig,
 } from '../config';
 import { FindRefreshTokenQuery } from './query/find-refresh-token/find-refresh-token.query';
-import { BatchDto } from 'src/batch/dto';
+import { BatchDto } from '../batch/dto';
+import { GetVideosQuery } from '../video/query';
+import { VideoDto } from '../video/dto';
+import { EditBatchCommand } from 'src/batch/command';
+import { BatchEntity } from 'src/batch/entity';
+import { SocketService } from 'src/socket/socket.service';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +32,7 @@ export class AuthService {
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
     private readonly jwtService: JwtService,
+    private readonly socketService: SocketService,
   ) {}
 
   public async adminSignin(dto: AdminSigninDto): Promise<{
@@ -84,6 +90,32 @@ export class AuthService {
     return {
       access_token: accessToken,
     };
+  }
+
+  public async adminSignOut(adminId: string, batchId?: string): Promise<void> {
+    if (batchId) {
+      const videos = await this.queryBus.execute<GetVideosQuery, VideoDto[]>(
+        new GetVideosQuery(),
+      );
+
+      await this.commandBus.execute<EditBatchCommand>(
+        new EditBatchCommand(
+          batchId,
+          { password: Math.random().toString(36).slice(-8) },
+          videos,
+        ),
+      );
+
+      await this.commandBus.execute<DeleteRefreshTokenCommand>(
+        new DeleteRefreshTokenCommand(batchId),
+      );
+
+      this.socketService.handleEmitSignout(batchId);
+    }
+
+    return await this.commandBus.execute<DeleteRefreshTokenCommand>(
+      new DeleteRefreshTokenCommand(adminId),
+    );
   }
 
   public async batchSignin(dto: BatchSigninDto): Promise<{
