@@ -10,6 +10,8 @@ import {
 import { AuthModule } from './auth/auth.module';
 import { VideoModule } from './video/video.module';
 import { BatchModule } from './batch/batch.module';
+import { AppGateway } from './app.gateway';
+import { SocketModule } from './socket/socket.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { BatchModule } from './batch/batch.module';
     AuthModule,
     VideoModule,
     BatchModule,
+    SocketModule,
   ],
+  providers: [AppGateway],
 })
 export class AppModule {}
