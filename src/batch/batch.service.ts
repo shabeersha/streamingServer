@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateBatchDto } from './dto';
+import { BatchDto, CreateBatchDto } from './dto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetVideosQuery } from '../video/query';
 import { VideoDto } from '../video/dto';
@@ -8,6 +8,7 @@ import { BatchEntity } from './entity';
 import { JwtConfig, Payload, Roles, refreshTokenConfig } from '../config';
 import { JwtService } from '@nestjs/jwt';
 import { SaveRefreshTokenCommand } from '../auth/command';
+import { FindBatchQuery } from './query';
 
 @Injectable()
 export class BatchService {
@@ -42,6 +43,14 @@ export class BatchService {
     );
 
     return newBatch;
+  }
+
+  async getBatchById(batchId: string): Promise<BatchEntity> {
+    const batch = await this.queryBus.execute<FindBatchQuery, BatchDto>(
+      new FindBatchQuery(batchId),
+    );
+
+    return new BatchEntity(batch);
   }
 
   public generateJWT(payload: Payload, config: JwtConfig): string {

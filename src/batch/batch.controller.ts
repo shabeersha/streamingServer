@@ -3,11 +3,16 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AdminAccessGuard, BatchAccessGuard } from '../auth/guard';
+import {
+  AdminAccessGuard,
+  BatchAccessGuard,
+  CommonAccessGuard,
+} from '../auth/guard';
 import { BatchDto, CreateBatchDto } from './dto';
 import { BatchService } from './batch.service';
 import { SerializeUser } from '../auth/decorator';
@@ -26,7 +31,13 @@ export class BatchController {
 
   @UseGuards(BatchAccessGuard)
   @Get()
-  getAdmin(@SerializeUser() batch: BatchDto): BatchEntity {
+  getBatch(@SerializeUser() batch: BatchDto): BatchEntity {
     return new BatchEntity(batch);
+  }
+
+  @UseGuards(CommonAccessGuard)
+  @Get(':id')
+  getBatchById(@Param('id') batchId: string): Promise<BatchEntity> {
+    return this.batchService.getBatchById(batchId);
   }
 }
