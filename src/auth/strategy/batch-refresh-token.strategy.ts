@@ -3,8 +3,8 @@ import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Payload, Roles, refreshTokenConfig } from '../../config';
-import { FindBatchQuery } from 'src/batch/query';
-import { BatchDto } from 'src/batch/dto';
+import { FindBatchQuery } from '../../batch/query';
+import { BatchDto } from '../../batch/dto';
 
 @Injectable()
 export class BatchRefreshTokenStrategy extends PassportStrategy(

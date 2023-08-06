@@ -59,7 +59,7 @@ afterAll(() => {
 
 describe('ADMIN', () => {
   describe('POST /admin/create', () => {
-    it('should throw an error if no body is provided', () => {
+    it('should throw an error if body not provided', () => {
       return spec().post('/admin/create').expectStatus(400);
     });
 
@@ -486,6 +486,44 @@ describe('BATCH', () => {
         .get('/batch')
         .withBearerToken('$S{batchAccessToken}')
         .expectStatus(200);
+    });
+  });
+
+  describe('POST /auth/batch/refresh', () => {
+    it('should throw an error if provided refreshtoken is invalid', () => {
+      const dto: TokenDto = {
+        token: 'invalid',
+      };
+
+      return spec().post('/auth/batch/refresh').withBody(dto).expectStatus(401);
+    });
+
+    it('should throw an error if body not provided', () => {
+      return spec().post('/auth/batch/refresh').expectStatus(401);
+    });
+
+    it('should throw an error if provided refreshtoken is an admin refreshtoken', () => {
+      const dto: TokenDto = {
+        token: `$S{refreshToken}`,
+      };
+
+      return spec()
+        .post('/auth/batch/refresh')
+        .withBody(dto)
+        .expectStatus(401)
+        .expectBodyContains('Access denied');
+    });
+
+    it('should refresh batch token', () => {
+      const dto: TokenDto = {
+        token: `$S{batchRefreshToken}`,
+      };
+
+      return spec()
+        .post('/auth/batch/refresh')
+        .withBody(dto)
+        .expectStatus(200)
+        .stores('batchAccessToken', 'access_token');
     });
   });
 });
