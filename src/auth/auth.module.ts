@@ -17,6 +17,7 @@ import {
   AdminAccessTokenStrategy,
   AdminRefreshTokenStrategy,
   BatchAccessTokenStrategy,
+  BatchRefreshTokenStrategy,
 } from './strategy';
 import { BatchModule } from '../batch/batch.module';
 
@@ -43,6 +44,7 @@ import { BatchModule } from '../batch/batch.module';
     AdminAccessTokenStrategy,
     AdminRefreshTokenStrategy,
     BatchAccessTokenStrategy,
+    BatchRefreshTokenStrategy,
     ...AuthQueryHandlers,
     ...AuthCommandHandlers,
   ],

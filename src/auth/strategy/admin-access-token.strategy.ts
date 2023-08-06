@@ -1,9 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Roles, accessTokenConfig } from '../../config';
+import { Payload, Roles, accessTokenConfig } from '../../config';
 import { FindAdminQuery } from '../../admin/query';
 import { AdminDto } from '../../admin/dto';
 
@@ -19,7 +18,7 @@ export class AdminAccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: { sub: string; role: Roles }): Promise<AdminDto> {
+  async validate(payload: Payload): Promise<AdminDto> {
     if (payload.role !== Roles.ADMIN) {
       throw new UnauthorizedException('Access denied');
     }

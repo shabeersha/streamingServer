@@ -109,6 +109,31 @@ export class AuthService {
     };
   }
 
+  public async refreshBatchToken(
+    batchId: string,
+    dto: TokenDto,
+  ): Promise<{ access_token: string }> {
+    const refreshToken = this.queryBus.execute<
+      FindRefreshTokenQuery,
+      RefreshTokenDto
+    >(new FindRefreshTokenQuery({ token: dto.token }));
+
+    if (!refreshToken) {
+      throw new UnauthorizedException();
+    }
+
+    const payload: Payload = {
+      sub: batchId,
+      role: Roles.STUDENT,
+    };
+
+    const accessToken = await this.generateJWT(payload, accessTokenConfig());
+
+    return {
+      access_token: accessToken,
+    };
+  }
+
   public generateJWT(payload: Payload, config: JwtConfig): string {
     return this.jwtService.sign(payload, {
       secret: config.secret,

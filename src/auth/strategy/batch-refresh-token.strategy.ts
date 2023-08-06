@@ -2,19 +2,19 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Payload, Roles, accessTokenConfig } from '../../config';
-import { BatchDto } from '../../batch/dto';
-import { FindBatchQuery } from '../../batch/query';
+import { Payload, Roles, refreshTokenConfig } from '../../config';
+import { FindBatchQuery } from 'src/batch/query';
+import { BatchDto } from 'src/batch/dto';
 
 @Injectable()
-export class BatchAccessTokenStrategy extends PassportStrategy(
+export class BatchRefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  'batch-access-jwt',
+  'batch-refresh-jwt',
 ) {
   constructor(private readonly queryBus: QueryBus) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: accessTokenConfig().secret,
+      jwtFromRequest: ExtractJwt.fromBodyField('token'),
+      secretOrKey: refreshTokenConfig().secret,
     });
   }
 

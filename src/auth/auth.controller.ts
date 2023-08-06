@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AdminSigninDto, BatchSigninDto, TokenDto } from './dto';
-import { AdminRefreshGuard } from './guard';
+import { AdminRefreshGuard, BatchRefreshGuard } from './guard';
 import { SerializeUser } from './decorator';
 
 @Controller('auth')
@@ -43,5 +43,17 @@ export class AuthController {
     refresh_token: string;
   }> {
     return this.authService.batchSignin(dto);
+  }
+
+  @UseGuards(BatchRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('batch/refresh')
+  refreshBatchToken(
+    @SerializeUser('_id') batchId: string,
+    @Body() dto: TokenDto,
+  ): Promise<{
+    access_token: string;
+  }> {
+    return this.authService.refreshBatchToken(batchId, dto);
   }
 }
