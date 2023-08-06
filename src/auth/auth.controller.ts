@@ -9,7 +9,7 @@ import {
 import { AuthService } from './auth.service';
 import { AdminSigninDto, BatchSigninDto, TokenDto } from './dto';
 import { AdminRefreshGuard } from './guard';
-import { SerializeAdmin } from './decorator';
+import { SerializeUser } from './decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +28,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('admin/refresh')
   refreshAdminToken(
-    @SerializeAdmin('_id') adminId: string,
+    @SerializeUser('_id') adminId: string,
     @Body() dto: TokenDto,
   ): Promise<{
     access_token: string;

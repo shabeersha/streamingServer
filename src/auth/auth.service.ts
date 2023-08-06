@@ -101,7 +101,7 @@ export class AuthService {
 
     const payload: Payload = await this.verifyBatchRefreshToken(token);
 
-    const accessToken = await this.generateJWT(payload, accessTokenConfig());
+    const accessToken = this.generateJWT(payload, accessTokenConfig());
 
     return {
       access_token: accessToken,

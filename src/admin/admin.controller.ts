@@ -11,7 +11,7 @@ import { AdminDto, CreateAdminDto } from './dto';
 import { AdminService } from './admin.service';
 import { AdminEntity } from './entity';
 import { AdminAccessGuard } from '../auth/guard';
-import { SerializeAdmin } from '../auth/decorator';
+import { SerializeUser } from '../auth/decorator';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('admin')
@@ -25,7 +25,7 @@ export class AdminController {
 
   @UseGuards(AdminAccessGuard)
   @Get()
-  getAdmin(@SerializeAdmin() admin: AdminDto): AdminEntity {
+  getAdmin(@SerializeUser() admin: AdminDto): AdminEntity {
     return new AdminEntity(admin);
   }
 }

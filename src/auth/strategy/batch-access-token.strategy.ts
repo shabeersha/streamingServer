@@ -4,13 +4,13 @@ import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Roles, accessTokenConfig } from '../../config';
-import { FindAdminQuery } from '../../admin/query';
-import { AdminDto } from '../../admin/dto';
+import { BatchDto } from '../../batch/dto';
+import { FindBatchQuery } from '../../batch/query';
 
 @Injectable()
-export class AdminAccessTokenStrategy extends PassportStrategy(
+export class BatchAccessTokenStrategy extends PassportStrategy(
   Strategy,
-  'admin-access-jwt',
+  'batch-access-jwt',
 ) {
   constructor(private readonly queryBus: QueryBus) {
     super({
@@ -19,13 +19,13 @@ export class AdminAccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: { sub: string; role: Roles }): Promise<AdminDto> {
-    if (payload.role !== Roles.ADMIN) {
+  async validate(payload: { sub: string; role: Roles }): Promise<BatchDto> {
+    if (payload.role !== Roles.STUDENT) {
       throw new UnauthorizedException('Access denied');
     }
 
-    return await this.queryBus.execute<FindAdminQuery, AdminDto>(
-      new FindAdminQuery(payload.sub),
+    return await this.queryBus.execute<FindBatchQuery, BatchDto>(
+      new FindBatchQuery(payload.sub),
     );
   }
 }

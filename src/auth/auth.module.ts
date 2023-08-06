@@ -16,6 +16,7 @@ import { RefreshTokenFactory } from './domain';
 import {
   AdminAccessTokenStrategy,
   AdminRefreshTokenStrategy,
+  BatchAccessTokenStrategy,
 } from './strategy';
 import { BatchModule } from '../batch/batch.module';
 
@@ -41,6 +42,7 @@ import { BatchModule } from '../batch/batch.module';
     RefreshTokenDtoRepository,
     AdminAccessTokenStrategy,
     AdminRefreshTokenStrategy,
+    BatchAccessTokenStrategy,
     ...AuthQueryHandlers,
     ...AuthCommandHandlers,
   ],

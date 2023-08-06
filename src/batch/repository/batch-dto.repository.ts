@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { BatchSchema } from '../schema';
 import { FilterQuery, Model } from 'mongoose';
 import { BatchDto } from '../dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class BatchDtoRepository {
@@ -14,6 +15,14 @@ export class BatchDtoRepository {
   async findOne(branchCode: string, batchNumber: number): Promise<BatchDto> {
     return await this.batchModel.findOne(
       { branchCode, batchNumber } as FilterQuery<BatchSchema>,
+      {},
+      { lean: true },
+    );
+  }
+
+  async findOneById(batchId: string): Promise<BatchDto> {
+    return await this.batchModel.findOne(
+      { _id: new ObjectId(batchId) } as FilterQuery<BatchSchema>,
       {},
       { lean: true },
     );

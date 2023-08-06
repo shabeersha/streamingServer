@@ -1,1 +1,1 @@
-export * from './serialize-admin.decorator';
+export * from './serialize-user.decorator';

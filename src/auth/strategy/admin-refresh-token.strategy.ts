@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Roles } from '../../config';
+import { Roles, adminRefreshTokenConfig } from '../../config';
 import { FindAdminQuery } from '../../admin/query';
 import { AdminDto } from '../../admin/dto';
 
@@ -12,13 +12,10 @@ export class AdminRefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'admin-refresh-jwt',
 ) {
-  constructor(
-    readonly config: ConfigService,
-    private readonly queryBus: QueryBus,
-  ) {
+  constructor(private readonly queryBus: QueryBus) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('token'),
-      secretOrKey: config.get('REFRESH_TOKEN_SECRET'),
+      secretOrKey: adminRefreshTokenConfig().secret,
     });
   }
 
