@@ -19,7 +19,7 @@ export class BatchEntity {
   public readonly videos: VideoDto[];
 
   @Exclude()
-  public readonly password: string;
+  public password: string;
 
   constructor(partial: Partial<BatchEntity>) {
     Object.assign(this, partial);

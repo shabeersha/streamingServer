@@ -17,4 +17,14 @@ export class VideoDtoRepository {
       .find({}, {}, { lean: true })
       .select('-videoUrl');
   }
+
+  async findVideoById(videoId: string): Promise<VideoDto> {
+    const video: VideoDto = await this.videoModel.findById(
+      new ObjectId(videoId),
+    );
+
+    if (!video) throw new NotFoundException('Video not found');
+
+    return video;
+  }
 }

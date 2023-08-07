@@ -11,6 +11,7 @@ export class SocketService {
   }
 
   handleEmitBatch(batchId: string, batch: BatchEntity): void {
+    delete batch.password;
     this.wss.to(batchId).emit('batch', batch);
   }
 

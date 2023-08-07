@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   HttpCode,
@@ -8,11 +9,13 @@ import {
   Patch,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { CreateVideoDto, EditVideoDto } from './dto';
+import { CreateVideoDto, EditVideoDto, ManageVideoDto } from './dto';
 import { Video } from './domain';
 import { VideoService } from './video.service';
 import { AdminAccessGuard } from '../auth/guard';
+import { BatchEntity } from 'src/batch/entity';
 
 @UseGuards(AdminAccessGuard)
 @Controller('video')
@@ -36,5 +39,12 @@ export class VideoController {
   @Delete(':id')
   deleteVideo(@Param('id') videoId: string): Promise<void> {
     return this.videoService.deleteVideo(videoId);
+  }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
+  @Post('unlock')
+  unlockVideo(@Body() dto: ManageVideoDto): Promise<BatchEntity> {
+    return this.videoService.unlockVideo(dto);
   }
 }
