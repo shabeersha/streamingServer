@@ -1,16 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateVideoCommand } from './command';
+import { CreateVideoCommand, EditVideoCommand } from './command';
 import { Video } from './domain';
-import { CreateVideoDto } from './dto';
+import { CreateVideoDto, EditVideoDto } from './dto';
 
 @Injectable()
 export class VideoService {
   constructor(private readonly commandBus: CommandBus) {}
 
-  public async createVideo(dto: CreateVideoDto) {
+  public async createVideo(dto: CreateVideoDto): Promise<Video> {
     return await this.commandBus.execute<CreateVideoCommand, Video>(
       new CreateVideoCommand(dto),
+    );
+  }
+
+  public async editVideo(videoId: string, dto: EditVideoDto): Promise<Video> {
+    return this.commandBus.execute<EditVideoCommand, Video>(
+      new EditVideoCommand(videoId, dto),
     );
   }
 }

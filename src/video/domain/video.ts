@@ -32,7 +32,7 @@ export class Video extends AggregateRoot {
     return this.description;
   }
 
-  async editNote(dto: EditVideoDto) {
+  async editVideo(dto: EditVideoDto) {
     this.videoKey = dto.videoKey ? dto.videoKey : this.videoKey;
     this.videoUrl = dto.videoUrl ? dto.videoUrl : this.videoUrl;
     this.videoThumbnail = dto.videoThumbnail
