@@ -8,7 +8,7 @@ import { AdminSchema } from '../src/admin/schema';
 import { CreateAdminDto } from '../src/admin/dto';
 import { RefreshTokenSchema } from '../src/auth/schema';
 import { AdminSigninDto, BatchSigninDto, TokenDto } from '../src/auth/dto';
-import { CreateVideoDto } from '../src/video/dto';
+import { CreateVideoDto, EditVideoDto } from '../src/video/dto';
 import { VideoSchema } from '../src/video/schema';
 import { CreateBatchDto } from '../src/batch/dto';
 import { BatchSchema } from '../src/batch/schema';
@@ -359,6 +359,53 @@ describe('VIDEO', () => {
         .withBearerToken('$S{accessToken}')
         .withBody(dto)
         .expectStatus(403);
+    });
+  });
+
+  describe('PATCH /video/:id', () => {
+    it('should throw an error if no authorization bearer is provided', () => {
+      return spec()
+        .patch('/video/{id}')
+        .withPathParams({
+          id: '$S{videoId}',
+        })
+        .expectStatus(401);
+    });
+
+    it('should throw an error if videoId is not provided', () => {
+      return spec()
+        .patch('/video')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(404);
+    });
+
+    it('should throw an error if videoId is invalid', () => {
+      const dto: EditVideoDto = {
+        description: 'This is an edited description',
+      };
+
+      return spec()
+        .patch('/video/{id}')
+        .withPathParams({
+          id: '6a5a4a3a2a1a',
+        })
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(404);
+    });
+
+    it('should edit video', () => {
+      const dto: EditVideoDto = {
+        description: 'This is an edited description',
+      };
+
+      return spec()
+        .patch('/video/{id}')
+        .withPathParams({ id: '$S{videoId}' })
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(200)
+        .expectBodyContains(dto.description);
     });
   });
 });
