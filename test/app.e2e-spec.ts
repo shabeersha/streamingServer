@@ -8,7 +8,7 @@ import { AdminSchema } from '../src/admin/schema';
 import { CreateAdminDto } from '../src/admin/dto';
 import { RefreshTokenSchema } from '../src/auth/schema';
 import { AdminSigninDto, BatchSigninDto, TokenDto } from '../src/auth/dto';
-import { CreateVideoDto, EditVideoDto } from '../src/video/dto';
+import { CreateVideoDto, EditVideoDto, ManageVideoDto } from '../src/video/dto';
 import { VideoSchema } from '../src/video/schema';
 import { CreateBatchDto } from '../src/batch/dto';
 import { BatchSchema } from '../src/batch/schema';
@@ -346,6 +346,26 @@ describe('VIDEO', () => {
         .stores('videoId', '_id');
     });
 
+    it('should create another video', () => {
+      const dto: CreateVideoDto = {
+        videoKey: 2,
+        videoUrl: 'http://example.com/video.mp4',
+        videoThumbnail: 'http://example.com/thumbnail.jpg',
+        description: 'Example video description',
+      };
+
+      return spec()
+        .post('/video')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(201)
+        .expectBodyContains(dto.videoKey)
+        .expectBodyContains(dto.videoUrl)
+        .expectBodyContains(dto.videoThumbnail)
+        .expectBodyContains(dto.description)
+        .stores('videoId2', '_id');
+    });
+
     it('should throw an error if videokey already in use', () => {
       const dto: CreateVideoDto = {
         videoKey: 1,
@@ -672,6 +692,73 @@ describe('BATCH', () => {
         .withBody(dto)
         .expectStatus(200)
         .stores('batchAccessToken', 'access_token');
+    });
+  });
+});
+
+describe('MANAGE VIDEO', () => {
+  describe('POST /video/unlock', () => {
+    it('should throw an error if no authorization bearer token is provided', () => {
+      return spec().post('/video/unlock').expectStatus(401);
+    });
+
+    it('should throw an error if body not provided', () => {
+      return spec()
+        .post('/video/unlock')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(400);
+    });
+
+    it('should throw an error if batchId is empty', () => {
+      const dto: Omit<ManageVideoDto, 'batchId'> = {
+        videoId: '$S{videoId2}',
+      };
+
+      return spec()
+        .post('/video/unlock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoId is empty', () => {
+      const dto: Omit<ManageVideoDto, 'videoId'> = {
+        batchId: '$S{batchId}',
+      };
+
+      return spec()
+        .post('/video/unlock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoId is invalid', () => {
+      const dto: ManageVideoDto = {
+        batchId: '$S{batchId}',
+        videoId: '$S{batchId}',
+      };
+
+      return spec()
+        .post('/video/unlock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(404);
+    });
+
+    it('should unlock video', () => {
+      const dto: ManageVideoDto = {
+        batchId: '$S{batchId}',
+        videoId: '$S{videoId2}',
+      };
+
+      return spec()
+        .post('/video/unlock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(200)
+        .expectBodyContains(dto.batchId)
+        .expectBodyContains(dto.videoId);
     });
   });
 });
