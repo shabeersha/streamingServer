@@ -11,8 +11,8 @@ import { FindVideoQuery } from './query';
 import { FindBatchQuery } from '../batch/query';
 import { BatchDto } from '../batch/dto';
 import { EditBatchCommand } from '../batch/command';
-import { BatchEntity } from 'src/batch/entity';
-import { SocketService } from 'src/socket/socket.service';
+import { BatchEntity } from '../batch/entity';
+import { SocketService } from '../socket/socket.service';
 
 @Injectable()
 export class VideoService {

@@ -408,6 +408,40 @@ describe('VIDEO', () => {
         .expectBodyContains(dto.description);
     });
   });
+
+  describe('DELETE /video/:id', () => {
+    it('should throw an error if the no authorization bearer is provided', () => {
+      return spec()
+        .delete('/video/{id}')
+        .withPathParams({ id: '$S{videoId}' })
+        .expectStatus(401);
+    });
+
+    it('should throw an error if videoId is not provided', () => {
+      return spec()
+        .delete('/video')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(404);
+    });
+
+    it('should throw an error if videoId is invalid', () => {
+      return spec()
+        .delete('/video/{id}')
+        .withPathParams({
+          id: '6a5a4a3a2a1a',
+        })
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(404);
+    });
+
+    it('should delete video', () => {
+      return spec()
+        .delete('/video/{id}')
+        .withPathParams({ id: '$S{videoId}' })
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(204);
+    });
+  });
 });
 
 describe('BATCH', () => {
