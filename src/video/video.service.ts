@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateVideoCommand, EditVideoCommand } from './command';
+import {
+  CreateVideoCommand,
+  DeleteVideoCommand,
+  EditVideoCommand,
+} from './command';
 import { Video } from './domain';
 import { CreateVideoDto, EditVideoDto } from './dto';
 
@@ -17,6 +21,12 @@ export class VideoService {
   public async editVideo(videoId: string, dto: EditVideoDto): Promise<Video> {
     return this.commandBus.execute<EditVideoCommand, Video>(
       new EditVideoCommand(videoId, dto),
+    );
+  }
+
+  public async deleteVideo(videoId: string): Promise<void> {
+    return this.commandBus.execute<DeleteVideoCommand>(
+      new DeleteVideoCommand(videoId),
     );
   }
 }

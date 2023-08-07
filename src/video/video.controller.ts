@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -27,5 +30,11 @@ export class VideoController {
     @Body() dto: EditVideoDto,
   ): Promise<Video> {
     return this.videoService.editVideo(videoId, dto);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':id')
+  deleteVideo(@Param('id') videoId: string): Promise<void> {
+    return this.videoService.deleteVideo(videoId);
   }
 }
