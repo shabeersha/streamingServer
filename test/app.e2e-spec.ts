@@ -761,4 +761,56 @@ describe('MANAGE VIDEO', () => {
         .expectBodyContains(dto.videoId);
     });
   });
+
+  describe('POST /video/lock', () => {
+    it('should throw an error if no authorization bearer token is provided', () => {
+      return spec().post('/video/lock').expectStatus(401);
+    });
+
+    it('should throw an error if no body is provided', () => {
+      return spec()
+        .post('/video/lock')
+        .withBearerToken('$S{accessToken}')
+        .expectStatus(400);
+    });
+
+    it('should throw an error if batchId is empty', () => {
+      const dto: Omit<ManageVideoDto, 'batchId'> = {
+        videoId: '$S{videoId2}',
+      };
+
+      return spec()
+        .post('/video/lock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should throw an error if videoId is empty', () => {
+      const dto: Omit<ManageVideoDto, 'videoId'> = {
+        batchId: '$S{batchId}',
+      };
+
+      return spec()
+        .post('/video/lock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(400);
+    });
+
+    it('should lock video', () => {
+      const dto: ManageVideoDto = {
+        batchId: '$S{batchId}',
+        videoId: '$S{videoId2}',
+      };
+
+      return spec()
+        .post('/video/lock')
+        .withBearerToken('$S{accessToken}')
+        .withBody(dto)
+        .expectStatus(200)
+        .expectBodyContains(dto.batchId)
+        .expectBodyContains(dto.videoId);
+    });
+  });
 });
