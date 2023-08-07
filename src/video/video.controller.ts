@@ -47,4 +47,11 @@ export class VideoController {
   unlockVideo(@Body() dto: ManageVideoDto): Promise<BatchEntity> {
     return this.videoService.unlockVideo(dto);
   }
+
+  @UseInterceptors(ClassSerializerInterceptor)
+  @HttpCode(HttpStatus.OK)
+  @Post('lock')
+  lockVideo(@Body() dto: ManageVideoDto): Promise<BatchEntity> {
+    return this.videoService.lockVideo(dto);
+  }
 }

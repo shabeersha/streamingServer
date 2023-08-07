@@ -67,4 +67,28 @@ export class VideoService {
 
     return batchEntity;
   }
+
+  public async lockVideo(dto: ManageVideoDto): Promise<BatchEntity> {
+    const batch = await this.queryBus.execute<FindBatchQuery, BatchDto>(
+      new FindBatchQuery(dto.batchId),
+    );
+
+    const videos: VideoDto[] = batch.videos.map((video) => {
+      if (video._id.toString() === dto.videoId) {
+        delete video.videoUrl;
+        return video;
+      }
+
+      return video;
+    });
+
+    const batchEntity = await this.commandBus.execute<
+      EditBatchCommand,
+      BatchEntity
+    >(new EditBatchCommand(dto.batchId, undefined, videos));
+
+    this.socketService.handleEmitBatch(dto.batchId, batchEntity);
+
+    return batchEntity;
+  }
 }
