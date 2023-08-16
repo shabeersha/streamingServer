@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
 import { RefreshTokenSchema } from './refresh-token.schema';
 import { RefreshToken } from '../domain';
-import { EntitySchemaFactory } from '../../database';
+import { EntitySchemaFactory } from '@app/common';
 
 @Injectable()
 export class RefreshTokenSchemaFactory

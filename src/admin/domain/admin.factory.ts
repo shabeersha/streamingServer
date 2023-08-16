@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import * as argon from 'argon2';
 import { ObjectId } from 'mongodb';
-import { EntityFactory } from '../../database';
+import { EntityFactory } from '@app/common';
 import { Admin } from '.';
 import { AdminEntityRepository } from '../repository';
 

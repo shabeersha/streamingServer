@@ -4,7 +4,7 @@ import {
   Injectable,
   forwardRef,
 } from '@nestjs/common';
-import { EntityFactory } from '../../database';
+import { EntityFactory } from '@app/common';
 import { ObjectId } from 'mongodb';
 import { Video } from './video';
 import { VideoEntityRepository } from '../repository';

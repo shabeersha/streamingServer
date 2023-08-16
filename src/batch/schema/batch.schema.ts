@@ -1,5 +1,5 @@
 import { Prop, Schema } from '@nestjs/mongoose';
-import { IdentifiableEntitySchema } from '../../database';
+import { IdentifiableEntitySchema } from '@app/common';
 import { VideoDto } from '../../video/dto';
 
 @Schema({ versionKey: false, timestamps: true, collection: 'batches' })

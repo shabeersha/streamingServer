@@ -5,7 +5,7 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import * as argon from 'argon2';
-import { EntityFactory } from '../../database';
+import { EntityFactory } from '@app/common';
 import { Batch } from './batch';
 import { BatchEntityRepository } from '../repository';
 import { ObjectId } from 'mongodb';

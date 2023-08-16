@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntitySchemaFactory } from 'src/database';
+import { EntitySchemaFactory } from '@app/common';
 import { ObjectId } from 'mongodb';
 import { VideoSchema } from '.';
 import { Video } from '../domain';

@@ -1,6 +1,6 @@
 import { Prop, Schema } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { IdentifiableEntitySchema } from '../../database';
+import { IdentifiableEntitySchema } from '@app/common';
 
 @Schema({
   versionKey: false,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntitySchemaFactory } from '../../database';
+import { EntitySchemaFactory } from '@app/common';
 import { AdminSchema } from '.';
 import { Admin } from '../domain';
 import { ObjectId } from 'mongodb';

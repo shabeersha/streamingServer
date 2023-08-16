@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BaseEntityRepository } from '../../database';
+import { BaseEntityRepository } from '@app/common';
 import { AdminSchema, AdminSchemaFactory } from '../schema';
 import { Admin } from '../domain';
 import { InjectModel } from '@nestjs/mongoose';

@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database';
+import { DatabaseModule } from '@app/common';
 import { ConfigModule } from '@nestjs/config';
 import { AdminModule } from './admin/admin.module';
 import {
   accessTokenConfig,
   adminRefreshTokenConfig,
   refreshTokenConfig,
-} from './config';
+} from '@app/common';
 import { AuthModule } from './auth/auth.module';
 import { VideoModule } from './video/video.module';
 import { BatchModule } from './batch/batch.module';

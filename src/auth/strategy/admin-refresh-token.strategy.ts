@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Payload, Roles, adminRefreshTokenConfig } from '../../config';
+import { Payload, Roles, adminRefreshTokenConfig } from '@app/common';
 import { FindAdminQuery } from '../../admin/query';
 import { AdminDto } from '../../admin/dto';
 

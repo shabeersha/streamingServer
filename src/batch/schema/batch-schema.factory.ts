@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntitySchemaFactory } from '../../database';
+import { EntitySchemaFactory } from '@app/common';
 import { ObjectId } from 'mongodb';
 import { BatchSchema } from '.';
 import { Batch } from '../domain';

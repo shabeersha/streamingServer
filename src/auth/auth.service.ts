@@ -17,7 +17,7 @@ import {
   accessTokenConfig,
   adminRefreshTokenConfig,
   refreshTokenConfig,
-} from '../config';
+} from '@app/common';
 import { FindRefreshTokenQuery } from './query/find-refresh-token/find-refresh-token.query';
 import { BatchDto } from '../batch/dto';
 import { GetVideosQuery } from '../video/query';

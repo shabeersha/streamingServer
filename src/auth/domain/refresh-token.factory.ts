@@ -1,6 +1,6 @@
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { ObjectId } from 'mongodb';
-import { EntityFactory } from '../../database';
+import { EntityFactory } from '@app/common';
 import { RefreshToken } from '.';
 import { RefreshTokenEntityRepository } from '../repository';
 
