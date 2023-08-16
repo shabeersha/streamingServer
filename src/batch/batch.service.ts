@@ -5,7 +5,7 @@ import { GetVideosQuery } from '../video/query';
 import { VideoDto } from '../video/dto';
 import { CreateBatchCommand } from './command';
 import { BatchEntity } from './entity';
-import { JwtConfig, Payload, Roles, refreshTokenConfig } from '@app/common';
+import { JwtConfig, Payload, Roles, refreshTokenConfig } from '@app/config';
 import { JwtService } from '@nestjs/jwt';
 import { SaveRefreshTokenCommand } from '../auth/command';
 import { FindBatchQuery } from './query';

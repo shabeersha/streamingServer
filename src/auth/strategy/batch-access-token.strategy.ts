@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Payload, Roles, accessTokenConfig } from '@app/common';
+import { Payload, Roles, accessTokenConfig } from '@app/config';
 import { BatchDto } from '../../batch/dto';
 import { FindBatchQuery } from '../../batch/query';
 

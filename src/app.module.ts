@@ -6,7 +6,7 @@ import {
   accessTokenConfig,
   adminRefreshTokenConfig,
   refreshTokenConfig,
-} from '@app/common';
+} from '@app/config';
 import { AuthModule } from './auth/auth.module';
 import { VideoModule } from './video/video.module';
 import { BatchModule } from './batch/batch.module';

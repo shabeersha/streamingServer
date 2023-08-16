@@ -4,5 +4,3 @@ export * from './database/entity-schema.factory';
 export * from './database/entity.factory';
 export * from './database/entity.repository';
 export * from './database/identifiable-entity.schema';
-export * from './config/jwt.config';
-export * from './config/roles.config';
