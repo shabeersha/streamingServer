@@ -13,18 +13,36 @@ export class BatchDtoRepository {
   ) {}
 
   async findOne(branchCode: string, batchNumber: number): Promise<BatchDto> {
-    return await this.batchModel.findOne(
+    const batch = await this.batchModel.findOne(
       { branchCode, batchNumber } as FilterQuery<BatchSchema>,
       {},
       { lean: true },
     );
+  
+   
+  
+    const batchDto: BatchDto = {
+      ...batch,
+      _id: batch._id.toString(), 
+    };
+  
+    return batchDto;
   }
 
+ 
   async findOneById(batchId: string): Promise<BatchDto> {
-    return await this.batchModel.findOne(
+    const batch = await this.batchModel.findOne(
       { _id: new ObjectId(batchId) } as FilterQuery<BatchSchema>,
       {},
       { lean: true },
     );
+  
+  
+    const batchDto: BatchDto = {
+      ...batch,
+      _id: batch._id.toString(), 
+    };
+  
+    return batchDto;
   }
 }

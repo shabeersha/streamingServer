@@ -28,7 +28,7 @@ export abstract class EntityRepository<
     );
 
     if (entityDocument) {
-      return this.entitySchemaFactory.createFromSchema(entityDocument);
+      return this.entitySchemaFactory.createFromSchema(entityDocument as TSchema);
     }
   }
 
@@ -38,7 +38,7 @@ export abstract class EntityRepository<
     return (
       await this.entityModel.find(entityFilterQuery, {}, { lean: true })
     ).map((entityDocument) =>
-      this.entitySchemaFactory.createFromSchema(entityDocument),
+      this.entitySchemaFactory.createFromSchema(entityDocument as TSchema),
     );
   }
 
