@@ -13,20 +13,31 @@ export class AdminDtoRepository {
   ) {}
 
   async findById(id: string): Promise<AdminDto> {
-    return await this.adminModel.findById(new ObjectId(id), {}, { lean: true });
+    const adminDocument= await this.adminModel.findById(new ObjectId(id), {}, { lean: true }) ;
+    const adminDto: AdminDto = {
+      ...adminDocument,
+      _id: adminDocument._id.toString(),
+    };
+  
+    return adminDto;
   }
 
   async findByUsername(username: string): Promise<AdminDto> {
-    const admin: AdminDto = await this.adminModel.findOne(
+    const admin = await this.adminModel.findOne(
       { username } as FilterQuery<AdminSchema>,
       {},
       { lean: true },
     );
-
+  
     if (!admin) {
       throw new NotFoundException('There is no admin with this username');
     }
-
-    return admin;
+  
+    const adminDto: AdminDto = {
+      ...admin,
+      _id: admin._id.toString(), 
+    };
+  
+    return adminDto;
   }
 }
